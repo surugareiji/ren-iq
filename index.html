@@ -90,19 +90,37 @@
   <div id="thread-title"></div>
   <div class="score-card">
     <div class="score-label">ʃt(c◜･ ᴗ ･)のIQ</div>
-    <div class="score-num" id="total-score">0</div>
-    <div class="score-unit">匹</div>
+    <div class="score-num" id="total-score">100</div>
+    <div class="score-unit">ポイント</div>
   </div>
-  <div class="stats-grid">
-    <div class="stat-item"><div class="stat-label">総書き込み数</div><div class="stat-val" id="stat-posts">—</div></div>
-    <div class="stat-item"><div class="stat-label">00秒 回収イベント</div><div class="stat-val delta-get" id="stat-00">—</div></div>
-    <div class="stat-item full"><div class="stat-label">ᶘｲ^⇁^ﾅ川 の訪問回数</div><div class="stat-val delta-zero" id="stat-17">—</div></div>
-    <div class="stat-item full"><div class="stat-label">|ｲ•᷄ - •᷅|𐙚|| が連れてきたʃ§ ( っ⁼´꒳`)っの数</div><div class="stat-val delta-plus" id="stat-14">—</div></div>
-    <div class="stat-item full"><div class="stat-label">uism が chk に絆された回数</div><div class="stat-val delta-plus" id="stat-20">—</div></div>
-    <div class="stat-item full"><div class="stat-label">uism に連れて行かれたʃ§ ( っ⁼´꒳`)っの数</div><div class="stat-val delta-minus" id="stat-27">—</div></div>
-    <div class="stat-item full"><div class="stat-label">梢に連れて行かれたʃ§ ( っ⁼´꒳`)っの数</div><div class="stat-val delta-minus" id="stat-52">—</div></div>
-    <div class="stat-item full"><div class="stat-label">knknc がイチャイチャした回数</div><div class="stat-val delta-plus" id="stat-57">—</div></div>
+<div class="stats-grid">
+
+  <div class="stat-item">
+    <div class="stat-label">総レス数</div>
+    <div class="stat-val" id="stat-posts">—</div>
   </div>
+
+  <div class="stat-item">
+    <div class="stat-label">:00 発生回数</div>
+    <div class="stat-val delta-plus" id="stat-00">—</div>
+  </div>
+
+  <div class="stat-item">
+    <div class="stat-label">ゾロ目発生回数</div>
+    <div class="stat-val delta-minus" id="stat-zoro">—</div>
+  </div>
+
+  <div class="stat-item">
+    <div class="stat-label">:17 発生回数</div>
+    <div class="stat-val delta-zero" id="stat-17">—</div>
+  </div>
+
+  <div class="stat-item full">
+    <div class="stat-label">ᶘｲ^⇁^ﾅ川 IQ</div>
+    <div class="stat-val" id="ama-iq">100</div>
+  </div>
+
+</div>
   <div class="log-section">
     <div class="log-header">
       <span>📝 イベントログ（特殊秒のみ）</span>
@@ -111,7 +129,7 @@
     <div id="log-body"><div id="log-rows"></div></div>
   </div>
   <div class="chart-wrap">
-    <div class="chart-title">📈 プール・保護の推移</div>
+    <div class="chart-title">📈 IQ推移</div>
     <canvas id="chart"></canvas>
   </div>
 </section>
@@ -120,28 +138,65 @@
   <details>
     <summary>ルール一覧</summary>
     <div class="rules-list">
-      <div class="rule-row"><span class="rule-sec">初期値</span><span class="rule-desc">保護あにょ 100匹からスタート</span></div>
-      <div class="rule-row"><span class="rule-sec">全秒</span><span class="rule-desc">書き込み1件 → プールに+1匹</span></div>
-      <div class="rule-row"><span class="rule-sec">:00</span><span class="rule-desc">🪤 プール全回収（保護へ）</span></div>
-      <div class="rule-row"><span class="rule-sec">:14</span><span class="rule-desc">|ｲ•᷄ - •᷅|𐙚|| があにょを連れてくる（保護+10匹）</span></div>
-      <div class="rule-row"><span class="rule-sec">:17</span><span class="rule-desc">ᶘｲ^⇁^ﾅ川 が遊びに来る（保護±0）</span></div>
-      <div class="rule-row"><span class="rule-sec">:20</span><span class="rule-desc">uism が chk に絆されてどこかへ（保護+10匹）</span></div>
-      <div class="rule-row"><span class="rule-sec">:27</span><span class="rule-desc">😨 uism に襲われる（保護−30匹）</span></div>
-      <div class="rule-row"><span class="rule-sec">:52</span><span class="rule-desc">😱 梢に襲われる（保護−10匹）</span></div>
-      <div class="rule-row"><span class="rule-sec">:57</span><span class="rule-desc">knknc が供給（保護+20匹）</span></div>
+
+  <div class="rule-row">
+    <span class="rule-sec">初期値</span>
+    <span class="rule-desc">両者IQ100スタート</span>
+  </div>
+
+  <div class="rule-row">
+    <span class="rule-sec">全レス</span>
+    <span class="rule-desc">ʃt(c◜･ ᴗ ･) IQ +1</span>
+  </div>
+
+  <div class="rule-row">
+    <span class="rule-sec">:00</span>
+    <span class="rule-desc">ʃt(c◜･ ᴗ ･) IQ +10</span>
+  </div>
+
+  <div class="rule-row">
+    <span class="rule-sec">:11</span>
+    <span class="rule-desc">ʃt(c◜･ ᴗ ･) IQ -10</span>
+  </div>
+
+  <div class="rule-row">
+    <span class="rule-sec">:22</span>
+    <span class="rule-desc">ʃt(c◜･ ᴗ ･) IQ -10</span>
+  </div>
+
+  <div class="rule-row">
+    <span class="rule-sec">:33</span>
+    <span class="rule-desc">ʃt(c◜･ ᴗ ･) IQ -10</span>
+  </div>
+
+  <div class="rule-row">
+    <span class="rule-sec">:44</span>
+    <span class="rule-desc">ʃt(c◜･ ᴗ ･) IQ -10</span>
+  </div>
+
+  <div class="rule-row">
+    <span class="rule-sec">:55</span>
+    <span class="rule-desc">ʃt(c◜･ ᴗ ･) IQ -10</span>
+  </div>
+
+  <div class="rule-row">
+    <span class="rule-sec">:17</span>
+    <span class="rule-desc">ᶘｲ^⇁^ﾅ川 IQ -10</span>
+  </div>
+
     </div>
   </details>
 </section>
 
 <script>
 var RULES = {
-  '00': { label: '🪤 罠回収！プールのあにょを保護', type: 'collect' },
-  '14': { label: '|ｲ•᷄ - •᷅|𐙚|| があにょを連れてくる', delta: 10,  type: 'score' },
-  '17': { label: 'ᶘｲ^⇁^ﾅ川 が遊びに来る',                   delta: 0,   type: 'score' },
-  '20': { label: 'uism が chk に絆されてどこかへ',                                  delta: 10,  type: 'score' },
-  '27': { label: 'uism に襲われる！',                                               delta: -30, type: 'score' },
-  '52': { label: '梢に襲われる！',                                                  delta: -10, type: 'score' },
-  '57': { label: 'knknc が供給される',                                              delta: 20,  type: 'score' }
+  '00': { label: ':00 IQ+10', delta: 10 },
+  '11': { label: ':11 IQ-10', delta: -10 },
+  '22': { label: ':22 IQ-10', delta: -10 },
+  '33': { label: ':33 IQ-10', delta: -10 },
+  '44': { label: ':44 IQ-10', delta: -10 },
+  '55': { label: ':55 IQ-10', delta: -10 },
+  '17': { label: ':17 ᶘｲ^⇁^ﾅ川 IQ-10', ama: -10 }
 };
 
 var logCollapsed = false;
@@ -236,39 +291,170 @@ function startCalc() {
 }
 
 function renderResult(posts) {
-  var pool = 0, score = 100, maxPool = 0, collectCount = 0;
-  var visit17 = 0, count14 = 0, count20 = 0, count27 = 0, count52 = 0, count57 = 0;
-  var events = [];
-  var chartData = [];
 
-  for (var i = 0; i < posts.length; i++) {
-    var post = posts[i];
-    pool += 1;
-    var rule = RULES[post.sec];
-    if (rule) {
-      if (rule.type === 'collect') {
-        if (pool > 0) {
-          score += pool; collectCount++;
-          events.push({ num: post.num, date: post.date, label: rule.label, delta: pool, type: 'collect' });
-          pool = 0;
-        } else {
-          events.push({ num: post.num, date: post.date, label: rule.label, delta: 0, type: 'collect-empty' });
-        }
-      } else if (rule.type === 'score') {
-        if (post.sec === '17') visit17++;
-        if (post.sec === '14') count14++;
-        if (post.sec === '20') count20++;
-        if (post.sec === '27') count27++;
-        if (post.sec === '52') count52++;
-        if (post.sec === '57') count57++;
-        score += rule.delta;
-        if (score < 0) score = 0;
-        var evType = rule.delta > 0 ? 'plus' : rule.delta < 0 ? 'minus' : 'zero';
-        events.push({ num: post.num, date: post.date, label: rule.label, delta: rule.delta, type: evType });
-      }
+var nyoIQ = 100;
+var amaIQ = 100;
+
+var cnt00 = 0;
+var cntZoro = 0;
+var cnt17 = 0;
+
+var events = [];
+var chartData = [];
+
+var zoroSecs = {
+'11': true,
+'22': true,
+'33': true,
+'44': true,
+'55': true
+};
+
+chartData.push({
+idx: 0,
+nyo: nyoIQ,
+ama: amaIQ
+});
+
+for (var i = 0; i < posts.length; i++) {
+
+var post = posts[i];
+var sec = post.sec;
+
+// 1レスごとに +1
+nyoIQ += 1;
+
+if (sec === '00') {
+
+  nyoIQ += 10;
+  cnt00++;
+
+  events.push({
+    num: post.num,
+    date: post.date,
+    label: '🟢 :00 IQ +10',
+    delta: 10,
+    type: 'plus'
+  });
+
+} else if (zoroSecs[sec]) {
+
+  nyoIQ -= 10;
+  cntZoro++;
+
+  events.push({
+    num: post.num,
+    date: post.date,
+    label: '🔴 :' + sec + ' IQ -10',
+    delta: -10,
+    type: 'minus'
+  });
+
+}
+
+if (sec === '17') {
+
+  amaIQ -= 10;
+  cnt17++;
+
+  events.push({
+    num: post.num,
+    date: post.date,
+    label: '🟡 :17 ᶘｲ^⇁^ﾅ川 IQ -10',
+    delta: -10,
+    type: 'zero'
+  });
+
+}
+
+chartData.push({
+  idx: i + 1,
+  nyo: nyoIQ,
+  ama: amaIQ
+});
+
+}
+
+document.getElementById('total-score').textContent = nyoIQ;
+
+document.getElementById('stat-posts').textContent =
+posts.length + ' レス';
+
+document.getElementById('stat-00').textContent =
+cnt00 + ' 回';
+
+document.getElementById('stat-zoro').textContent =
+cntZoro + ' 回';
+
+document.getElementById('stat-17').textContent =
+cnt17 + ' 回';
+
+document.getElementById('ama-iq').textContent =
+amaIQ;
+
+var logRows = document.getElementById('log-rows');
+logRows.innerHTML = '';
+
+if (events.length === 0) {
+
+logRows.innerHTML =
+  '<div class="log-row">' +
+  '<span class="log-event" style="color:var(--muted);grid-column:1/-1">' +
+  '特殊秒はありませんでした' +
+  '</span></div>';
+
+} else {
+
+for (var j = 0; j < events.length; j++) {
+
+  var ev = events[j];
+
+  var dc =
+    ev.type === 'plus' ? 'delta-plus' :
+    ev.type === 'minus' ? 'delta-minus' :
+    'delta-zero';
+
+  var ds =
+    ev.delta > 0 ?
+    ('+' + ev.delta) :
+    String(ev.delta);
+
+  var row = document.createElement('div');
+
+  row.className = 'log-row';
+
+  row.innerHTML =
+    '<span class="log-res">&gt;&gt;' + ev.num + '</span>' +
+    '<span class="log-event">' +
+    ev.label +
+    '<br><span style="font-size:.68rem;color:var(--muted)">' +
+    ev.date +
+    '</span></span>' +
+    '<span class="log-delta ' + dc + '">' +
+    ds +
+    '</span>';
+
+  logRows.appendChild(row);
+}
+
+}
+
+document.getElementById('result').style.display = 'block';
+
+drawChart(chartData);
+
+document.getElementById('result').scrollIntoView({
+behavior: 'smooth',
+block: 'start'
+});
+
     }
-    if (pool > maxPool) maxPool = pool;
-    chartData.push({ idx: i, pool: pool, score: score });
+
+chartData.push({
+  idx: i,
+  nyo: nyoIQ,
+  ama: amaIQ
+});
   }
 
   document.getElementById('total-score').textContent = score.toLocaleString();
@@ -323,8 +509,8 @@ function drawChart(data) {
   ctx.scale(dpr, dpr);
   if (data.length < 2) return;
 
-  var poolVals  = data.map(function(d) { return d.pool; });
-  var scoreVals = data.map(function(d) { return d.score; });
+  var nyoVals  = data.map(function(d) { return d.nyo; });
+  var amaVals = data.map(function(d) { return d.ama; });
   var allVals = poolVals.concat(scoreVals);
   var maxVal = Math.max.apply(null, allVals.concat([1]));
   var minVal = Math.min.apply(null, allVals.concat([0]));
@@ -357,8 +543,8 @@ function drawChart(data) {
     ctx.stroke();
   }
 
-  drawLine(poolVals,  '#c9d6ff');
-  drawLine(scoreVals, '#5ef0c8');
+  drawLine(nyoVals,  '#c9d6ff');
+  drawLine(amaVals, '#5ef0c8');
 
   ctx.fillStyle = '#7b82a8'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
   var idxs = [0, Math.floor(data.length / 2), data.length - 1];

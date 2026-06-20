@@ -457,18 +457,23 @@ chartData.push({
 });
   }
 
-  document.getElementById('total-score').textContent = score.toLocaleString();
-  document.getElementById('stat-posts').textContent = posts.length.toLocaleString() + ' 件';
-  document.getElementById('stat-pool').textContent = pool.toLocaleString() + ' 匹';
-  document.getElementById('stat-00').textContent = collectCount + ' 回';
-  document.getElementById('stat-maxpool').textContent = maxPool.toLocaleString() + ' 匹';
-  document.getElementById('stat-17').textContent = visit17 + ' 回';
-  document.getElementById('stat-14').textContent = count14 + ' 匹';
-  document.getElementById('stat-20').textContent = count20 + ' 回';
-  document.getElementById('stat-27').textContent = count27 + ' 匹';
-  document.getElementById('stat-52').textContent = count52 + ' 匹';
-  document.getElementById('stat-57').textContent = count57 + ' 回';
+  if (document.getElementById('total-score'))
+  document.getElementById('total-score').textContent = nyoIQ;
 
+if (document.getElementById('stat-posts'))
+  document.getElementById('stat-posts').textContent = posts.length + ' レス';
+
+if (document.getElementById('stat-00'))
+  document.getElementById('stat-00').textContent = cnt00 + ' 回';
+
+if (document.getElementById('stat-zoro'))
+  document.getElementById('stat-zoro').textContent = cntZoro + ' 回';
+
+if (document.getElementById('stat-17'))
+  document.getElementById('stat-17').textContent = cnt17 + ' 回';
+
+if (document.getElementById('ama-iq'))
+  document.getElementById('ama-iq').textContent = amaIQ;
   var logRows = document.getElementById('log-rows');
   logRows.innerHTML = '';
   if (events.length === 0) {

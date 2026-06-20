@@ -330,6 +330,7 @@
     try {
       const res = await fetch(`/api/fetch-thread?url=${encodeURIComponent(url)}`);
       const data = await res.json();
+      alert(JSON.stringify(data));
       if (data.error) throw new Error(data.error);
 
       // スレタイ表示

@@ -138,10 +138,10 @@
   <details>
     <summary>ルール一覧</summary>
     <div class="rules-list">
-
+      
   <div class="rule-row">
-    <span class="rule-sec">初期値</span>
-    <span class="rule-desc">両者IQ100スタート</span>
+    <span class="rule-sec">通常秒</span>
+    <span class="rule-desc">ʃt(c◜･ ᴗ ･) IQ +1</span>
   </div>
 
   <div class="rule-row">
@@ -320,9 +320,18 @@ for (var i = 0; i < posts.length; i++) {
 
 var post = posts[i];
 var sec = post.sec;
-
-// 1レスごとに +1
-nyoIQ += 1;
+  
+if (
+  sec !== '00' &&
+  sec !== '11' &&
+  sec !== '22' &&
+  sec !== '33' &&
+  sec !== '44' &&
+  sec !== '55' &&
+  sec !== '17'
+) {
+  nyoIQ += 1;
+}
 
 if (sec === '00') {
 

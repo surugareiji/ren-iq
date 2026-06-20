@@ -1,536 +1,378 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IQスレ集計</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>あにょざらし罠🪤集計</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0e0e14;
-      --surface: #1a1a24;
-      --surface2: #22222f;
-      --border: #2e2e40;
-      --accent: #7c6af7;
-      --accent2: #f76a8a;
-      --text: #e8e8f0;
-      --text-dim: #888899;
-      --green: #5af7a0;
+      --bg:#1a1a2e;--surface:#16213e;--panel:#0f3460;
+      --accent:#e94560;--gold:#f5c842;--mint:#5ef0c8;
+      --soft:#c9d6ff;--text:#eef0ff;--muted:#7b82a8;
+      --plus:#5ef0c8;--minus:#ff6b6b;--zero:#f5c842;
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
-      min-height: 100vh;
-      padding: 24px 16px 48px;
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 32px;
-    }
-
-    header h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      color: var(--text);
-    }
-
-    header p {
-      margin-top: 6px;
-      font-size: 0.85rem;
-      color: var(--text-dim);
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .input-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    input[type="text"] {
-      flex: 1;
-      min-width: 200px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      padding: 10px 14px;
-      font-size: 0.9rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    input[type="text"]:focus {
-      border-color: var(--accent);
-    }
-
-    input[type="text"]::placeholder {
-      color: var(--text-dim);
-    }
-
-    button {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 20px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.2s;
-      white-space: nowrap;
-    }
-
-    button:hover { opacity: 0.85; }
-    button:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    #thread-title {
-      font-size: 0.85rem;
-      color: var(--text-dim);
-      margin-top: 10px;
-      min-height: 1.2em;
-    }
-
-    #status {
-      font-size: 0.85rem;
-      color: var(--accent);
-      margin-top: 8px;
-      min-height: 1.2em;
-    }
-
-    .iq-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    @media (max-width: 500px) {
-      .iq-grid { grid-template-columns: 1fr; }
-    }
-
-    .iq-box {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 16px;
-      text-align: center;
-    }
-
-    .iq-box .label {
-      font-size: 0.78rem;
-      color: var(--text-dim);
-      margin-bottom: 6px;
-    }
-
-    .iq-box .name {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .iq-box .value {
-      font-size: 2.4rem;
-      font-weight: 700;
-      line-height: 1;
-    }
-
-    .iq-box.nyo .name { color: var(--accent); }
-    .iq-box.nyo .value { color: var(--accent); }
-    .iq-box.ama .name { color: var(--accent2); }
-    .iq-box.ama .value { color: var(--accent2); }
-
-    .iq-box .res-count {
-      font-size: 0.78rem;
-      color: var(--text-dim);
-      margin-top: 6px;
-    }
-
-    .section-title {
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      margin-bottom: 14px;
-    }
-
-    .events-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-
-    @media (max-width: 450px) {
-      .events-grid { grid-template-columns: 1fr 1fr; }
-    }
-
-    .event-box {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      text-align: center;
-    }
-
-    .event-box .ev-label {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      margin-bottom: 4px;
-    }
-
-    .event-box .ev-value {
-      font-size: 1.6rem;
-      font-weight: 700;
-    }
-
-    .event-box .ev-desc {
-      font-size: 0.7rem;
-      color: var(--text-dim);
-      margin-top: 2px;
-    }
-
-    .ev-00 .ev-value { color: var(--green); }
-    .ev-zoro .ev-value { color: var(--accent2); }
-    .ev-17 .ev-value { color: #f7c46a; }
-
-    canvas {
-      display: block;
-      width: 100%;
-    }
-
-    #chart-wrapper {
-      position: relative;
-      width: 100%;
-      height: 260px;
-    }
-
-    .hidden { display: none; }
-
-    .rules {
-      font-size: 0.78rem;
-      color: var(--text-dim);
-      line-height: 1.8;
-    }
-
-    .rules span {
-      display: inline-block;
-      background: var(--surface2);
-      border-radius: 4px;
-      padding: 1px 6px;
-      margin-right: 4px;
-    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:1.5rem 1rem 4rem}
+    header{text-align:center;margin-bottom:2rem}
+    .trap-icon{font-size:3.5rem;display:block;animation:bounce 2s ease-in-out infinite}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    h1{font-size:clamp(1.4rem,5vw,2rem);font-weight:900;margin-top:.4rem;background:linear-gradient(135deg,var(--soft),var(--mint));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .subtitle{font-size:.8rem;color:var(--muted);margin-top:.3rem}
+    .input-section{max-width:640px;margin:0 auto 2rem}
+    .input-row{display:flex;gap:.5rem}
+    input[type=text]{flex:1;background:var(--surface);border:1.5px solid var(--panel);border-radius:10px;color:var(--text);font-family:inherit;font-size:.9rem;padding:.75rem 1rem;outline:none;transition:border-color .2s}
+    input[type=text]:focus{border-color:var(--mint)}
+    input[type=text]::placeholder{color:var(--muted)}
+    #calc-btn{background:linear-gradient(135deg,var(--accent),#c0392b);color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:.9rem;font-weight:700;padding:.75rem 1.4rem;cursor:pointer;white-space:nowrap}
+    #calc-btn:disabled{opacity:.4;cursor:not-allowed}
+    .hint{font-size:.75rem;color:var(--muted);margin-top:.5rem;text-align:center}
+    #loading{display:none;text-align:center;padding:2rem;color:var(--muted);font-size:.9rem}
+    .spinner{width:32px;height:32px;border:3px solid var(--panel);border-top-color:var(--mint);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto .8rem}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    #error-box{display:none;max-width:640px;margin:0 auto 1.5rem;background:rgba(233,69,96,.15);border:1px solid var(--accent);border-radius:10px;padding:.8rem 1rem;font-size:.85rem;color:#ffaaaa;word-break:break-all}
+    #result{display:none;max-width:640px;margin:0 auto}
+    #thread-title{display:none;text-align:center;margin-bottom:1rem;font-size:.9rem;font-weight:700;color:var(--soft);word-break:break-all;padding:.5rem 1rem;background:var(--surface);border:1px solid var(--panel);border-radius:10px}
+    .score-card{background:var(--surface);border:1.5px solid var(--panel);border-radius:16px;padding:1.5rem 1.5rem 1.2rem;margin-bottom:1.5rem;text-align:center}
+    .score-label{font-size:.75rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.5rem}
+    .score-num{font-size:clamp(3rem,12vw,5rem);font-weight:900;line-height:1;color:var(--mint)}
+    .score-unit{font-size:1rem;color:var(--muted);margin-top:.4rem}
+    .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin-bottom:1.5rem}
+    .stat-item{background:var(--surface);border:1px solid var(--panel);border-radius:12px;padding:.9rem 1rem}
+    .stat-item.full{grid-column:1/-1}
+    .stat-label{font-size:.7rem;color:var(--muted);margin-bottom:.3rem}
+    .stat-val{font-size:1.3rem;font-weight:700}
+    .log-section{background:var(--surface);border:1px solid var(--panel);border-radius:12px;overflow:hidden;margin-bottom:1.5rem}
+    .log-header{background:var(--panel);padding:.65rem 1rem;font-size:.8rem;font-weight:700;color:var(--soft);display:flex;justify-content:space-between;align-items:center}
+    .log-toggle{background:none;border:1px solid rgba(255,255,255,.2);color:var(--muted);font-size:.75rem;cursor:pointer;padding:.1rem .5rem;border-radius:4px;font-family:inherit}
+    #log-body{max-height:360px;overflow-y:auto}
+    #log-body.collapsed{display:none}
+    .log-row{display:grid;grid-template-columns:3.5rem 1fr auto;gap:.5rem;align-items:center;padding:.5rem 1rem;border-bottom:1px solid rgba(255,255,255,.04);font-size:.82rem}
+    .log-row:last-child{border-bottom:none}
+    .log-res{color:var(--muted);font-size:.72rem}
+    .log-event{color:var(--text);line-height:1.35}
+    .log-delta{font-weight:700;white-space:nowrap;font-size:.8rem}
+    .delta-plus{color:var(--plus)}.delta-minus{color:var(--minus)}.delta-zero{color:var(--zero)}.delta-get{color:var(--gold)}
+    .chart-wrap{background:var(--surface);border:1px solid var(--panel);border-radius:12px;padding:1rem;margin-bottom:1.5rem}
+    .chart-title{font-size:.8rem;font-weight:700;color:var(--soft);margin-bottom:.75rem}
+    canvas{display:block;width:100%}
+    .rules-section{max-width:640px;margin:1.5rem auto 0}
+    details{background:var(--surface);border:1px solid var(--panel);border-radius:12px;overflow:hidden}
+    summary{padding:.7rem 1rem;font-size:.8rem;font-weight:700;color:var(--muted);cursor:pointer;list-style:none}
+    summary::-webkit-details-marker{display:none}
+    .rules-list{padding:0 1rem 1rem}
+    .rule-row{display:flex;gap:.75rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.8rem}
+    .rule-row:last-child{border-bottom:none}
+    .rule-sec{min-width:2.5rem;font-weight:700;color:var(--gold)}
+    .rule-desc{color:var(--muted);line-height:1.45}
   </style>
 </head>
 <body>
 
 <header>
-  <h1>ʃt(c◜･ ᴗ ･) IQスレ集計</h1>
-  <p>したらばBBSのIQスレを集計します</p>
+  <span class="trap-icon">🪤</span>
+  <h1>あにょざらし罠 集計</h1>
+  <p class="subtitle">ʃ§ ( っ⁼´꒳`)っ何匹捕まえた？</p>
 </header>
 
-<!-- 入力 -->
-<div class="card">
+<section class="input-section">
   <div class="input-row">
-    <input type="text" id="url-input"
-      placeholder="https://jbbs.shitaraba.net/bbs/read.cgi/anime/11224/..."
-      value="https://jbbs.shitaraba.net/bbs/read.cgi/anime/11224/1772338229/">
-    <button id="fetch-btn" onclick="fetchThread()">集計</button>
+    <input type="text" id="url-input" placeholder="https://jbbs.shitaraba.net/bbs/read.cgi/…" autocomplete="off" spellcheck="false" />
+    <button id="calc-btn">集計する</button>
   </div>
+  <p class="hint">したらば掲示板のスレURLを貼り付けてください</p>
+</section>
+
+<div id="error-box"></div>
+<div id="loading"><div class="spinner"></div>書き込みを読み込み中…</div>
+
+<section id="result">
   <div id="thread-title"></div>
-  <div id="status"></div>
-</div>
-
-<!-- IQ表示 -->
-<div class="card hidden" id="result-card">
-  <div class="section-title">現在のIQ</div>
-  <div class="iq-grid">
-    <div class="iq-box nyo">
-      <div class="label">現在のIQ</div>
-      <div class="name">ʃt(c◜･ ᴗ ･)</div>
-      <div class="value" id="nyo-iq">100</div>
-      <div class="res-count" id="nyo-rescount"></div>
-    </div>
-    <div class="iq-box ama">
-      <div class="label">現在のIQ</div>
-      <div class="name">ᶘｲ^⇁^ﾅ川</div>
-      <div class="value" id="ama-iq">100</div>
-      <div class="res-count" id="ama-rescount"></div>
-    </div>
+  <div class="score-card">
+    <div class="score-label">保護したあにょざらし</div>
+    <div class="score-num" id="total-score">0</div>
+    <div class="score-unit">匹</div>
   </div>
-</div>
-
-<!-- イベントカウント -->
-<div class="card hidden" id="events-card">
-  <div class="section-title">イベント発生回数</div>
-  <div class="events-grid">
-    <div class="event-box ev-00">
-      <div class="ev-label">秒数 :00</div>
-      <div class="ev-value" id="cnt-00">0</div>
-      <div class="ev-desc">IQ +10 (ʃt)</div>
-    </div>
-    <div class="event-box ev-zoro">
-      <div class="ev-label">その他ゾロ目</div>
-      <div class="ev-value" id="cnt-zoro">0</div>
-      <div class="ev-desc">IQ −10 (ʃt)</div>
-    </div>
-    <div class="event-box ev-17">
-      <div class="ev-label">秒数 :17</div>
-      <div class="ev-value" id="cnt-17">0</div>
-      <div class="ev-desc">IQ −10 (ᶘｲ^⇁^ﾅ川)</div>
-    </div>
+  <div class="stats-grid">
+    <div class="stat-item"><div class="stat-label">総書き込み数</div><div class="stat-val" id="stat-posts">—</div></div>
+    <div class="stat-item"><div class="stat-label">プールに残っている</div><div class="stat-val" id="stat-pool">—</div></div>
+    <div class="stat-item"><div class="stat-label">00秒 回収イベント</div><div class="stat-val delta-get" id="stat-00">—</div></div>
+    <div class="stat-item"><div class="stat-label">最大同時プール</div><div class="stat-val" id="stat-maxpool">—</div></div>
+    <div class="stat-item full"><div class="stat-label">ᶘｲ^⇁^ﾅ川 の訪問回数</div><div class="stat-val delta-zero" id="stat-17">—</div></div>
+    <div class="stat-item full"><div class="stat-label">|ｲ•᷄ - •᷅|𐙚|| が連れてきたʃ§ ( っ⁼´꒳`)っの数</div><div class="stat-val delta-plus" id="stat-14">—</div></div>
+    <div class="stat-item full"><div class="stat-label">uism が chk に絆された回数</div><div class="stat-val delta-plus" id="stat-20">—</div></div>
+    <div class="stat-item full"><div class="stat-label">uism に連れて行かれたʃ§ ( っ⁼´꒳`)っの数</div><div class="stat-val delta-minus" id="stat-27">—</div></div>
+    <div class="stat-item full"><div class="stat-label">梢に連れて行かれたʃ§ ( っ⁼´꒳`)っの数</div><div class="stat-val delta-minus" id="stat-52">—</div></div>
+    <div class="stat-item full"><div class="stat-label">knknc がイチャイチャした回数</div><div class="stat-val delta-plus" id="stat-57">—</div></div>
   </div>
-</div>
-
-<!-- グラフ -->
-<div class="card hidden" id="chart-card">
-  <div class="section-title">IQ推移グラフ</div>
-  <div id="chart-wrapper">
-    <canvas id="iq-chart"></canvas>
+  <div class="log-section">
+    <div class="log-header">
+      <span>📝 イベントログ（特殊秒のみ）</span>
+      <button class="log-toggle" id="log-toggle-btn">折りたたむ</button>
+    </div>
+    <div id="log-body"><div id="log-rows"></div></div>
   </div>
-</div>
-
-<!-- ルール -->
-<div class="card">
-  <div class="section-title">ルール</div>
-  <div class="rules">
-    <span style="color:var(--accent)">ʃt(c◜･ ᴗ ･)</span>はIQ100からスタート<br>
-    1レスごとにIQ <span>+1</span><br>
-    秒数 <span>:00</span> でIQ <span>+10</span><br>
-    その他のゾロ目でIQ <span>−10</span>（:11 :22 :33 :44 :55）<br>
-    秒数 <span>:17</span> で <span style="color:var(--accent2)">ᶘｲ^⇁^ﾅ川</span> のIQ <span>−10</span>（100スタート）
+  <div class="chart-wrap">
+    <div class="chart-title">📈 プール・保護の推移</div>
+    <canvas id="chart"></canvas>
   </div>
-</div>
+</section>
+
+<section class="rules-section">
+  <details>
+    <summary>ルール一覧</summary>
+    <div class="rules-list">
+      <div class="rule-row"><span class="rule-sec">初期値</span><span class="rule-desc">保護あにょ 100匹からスタート</span></div>
+      <div class="rule-row"><span class="rule-sec">全秒</span><span class="rule-desc">書き込み1件 → プールに+1匹</span></div>
+      <div class="rule-row"><span class="rule-sec">:00</span><span class="rule-desc">🪤 プール全回収（保護へ）</span></div>
+      <div class="rule-row"><span class="rule-sec">:14</span><span class="rule-desc">|ｲ•᷄ - •᷅|𐙚|| があにょを連れてくる（保護+10匹）</span></div>
+      <div class="rule-row"><span class="rule-sec">:17</span><span class="rule-desc">ᶘｲ^⇁^ﾅ川 が遊びに来る（保護±0）</span></div>
+      <div class="rule-row"><span class="rule-sec">:20</span><span class="rule-desc">uism が chk に絆されてどこかへ（保護+10匹）</span></div>
+      <div class="rule-row"><span class="rule-sec">:27</span><span class="rule-desc">😨 uism に襲われる（保護−30匹）</span></div>
+      <div class="rule-row"><span class="rule-sec">:52</span><span class="rule-desc">😱 梢に襲われる（保護−10匹）</span></div>
+      <div class="rule-row"><span class="rule-sec">:57</span><span class="rule-desc">knknc が供給（保護+20匹）</span></div>
+    </div>
+  </details>
+</section>
 
 <script>
-  let chartInstance = null;
+var RULES = {
+  '00': { label: '🪤 罠回収！プールのあにょを保護', type: 'collect' },
+  '14': { label: '|ｲ•᷄ - •᷅|𐙚|| があにょを連れてくる', delta: 10,  type: 'score' },
+  '17': { label: 'ᶘｲ^⇁^ﾅ川 が遊びに来る',                   delta: 0,   type: 'score' },
+  '20': { label: 'uism が chk に絆されてどこかへ',                                  delta: 10,  type: 'score' },
+  '27': { label: 'uism に襲われる！',                                               delta: -30, type: 'score' },
+  '52': { label: '梢に襲われる！',                                                  delta: -10, type: 'score' },
+  '57': { label: 'knknc が供給される',                                              delta: 20,  type: 'score' }
+};
 
-  async function fetchThread() {
-    const url = document.getElementById('url-input').value.trim();
-    if (!url) return;
+var logCollapsed = false;
 
-    const btn = document.getElementById('fetch-btn');
-    btn.disabled = true;
-    setStatus('取得中...');
+document.getElementById('log-toggle-btn').addEventListener('click', function() {
+  logCollapsed = !logCollapsed;
+  document.getElementById('log-body').classList.toggle('collapsed', logCollapsed);
+  this.textContent = logCollapsed ? '展開する' : '折りたたむ';
+});
+document.getElementById('calc-btn').addEventListener('click', startCalc);
+document.getElementById('url-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') startCalc();
+});
 
-    try {
-      const res = await fetch(`/api/fetch-thread?url=${encodeURIComponent(url)}`);
-      const data = await res.json();
-      alert(JSON.stringify(data));
-      if (data.error) throw new Error(data.error);
+function showError(msg) {
+  var el = document.getElementById('error-box');
+  el.textContent = '⚠️ ' + msg;
+  el.style.display = 'block';
+}
+function hideError() {
+  document.getElementById('error-box').style.display = 'none';
+}
 
-      // スレタイ表示
-      if (data.threadTitle) {
-        document.getElementById('thread-title').textContent = '📌 ' + data.threadTitle;
-      }
+function toRawUrl(input) {
+  var u = input.trim().replace(/\/$/, '');
+  var m = u.match(/jbbs\.shitaraba\.net\/bbs\/read\.cgi\/([^\/]+\/[^\/]+\/[^\/]+)/);
+  if (m) return 'https://jbbs.shitaraba.net/bbs/rawmode.cgi/' + m[1] + '/1-';
+  if (u.indexOf('rawmode.cgi') !== -1) return u;
+  var m2 = u.match(/jbbs\.shitaraba\.net\/([^\/]+\/\d+\/\d+)/);
+  if (m2) return 'https://jbbs.shitaraba.net/bbs/rawmode.cgi/' + m2[1] + '/1-';
+  return null;
+}
 
-      processThread(data.text);
-      setStatus('');
-    } catch (e) {
-      setStatus('エラー: ' + e.message);
-    } finally {
-      btn.disabled = false;
-    }
+function decodeHtmlEntities(str) {
+  var txt = document.createElement('textarea');
+  txt.innerHTML = str;
+  return txt.value;
+}
+
+function parseRaw(text) {
+  var lines = text.split('\n');
+  var posts = [];
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if (!line) continue;
+    var parts = line.split('<>');
+    if (parts.length < 6) continue;
+    var date = parts[3].trim();
+    var sm = date.match(/:(\d{2})$/);
+    if (!sm) continue;
+    posts.push({ num: parts[0].trim(), date: date, sec: sm[1], title: parts[5].trim() });
+  }
+  return posts;
+}
+
+function startCalc() {
+  var input = document.getElementById('url-input').value.trim();
+  if (!input) { showError('URLを入力してください'); return; }
+  hideError();
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('calc-btn').disabled = true;
+
+  var rawUrl = toRawUrl(input);
+  if (!rawUrl) {
+    showError('URLの形式が正しくありません。したらば掲示板のスレURLを入力してください。');
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('calc-btn').disabled = false;
+    return;
   }
 
-  function processThread(text) {
-    const lines = text.split('\n').filter(l => l.trim());
-
-    // ʃtのIQ推移・ᶘｲのIQ推移
-    let nyoIQ = 100;
-    let amaIQ = 100;
-    const nyoHistory = [100];
-    const amaHistory = [100];
-    const labels = ['開始'];
-
-    let cnt00 = 0;
-    let cntZoro = 0;
-    let cnt17 = 0;
-
-    // ゾロ目の秒数（00除く）
-    const zoroSecs = new Set(['11','22','33','44','55']);
-
-    for (const line of lines) {
-      const parts = line.split('<>');
-      if (parts.length < 5) continue;
-
-      const resNum = parts[0];
-      const datetime = parts[2]; // 例: 2025/01/23 12:34:56 ID:xxxx
-
-      // 秒数を抽出
-      const secMatch = datetime.match(/:(\d{2})(?:\s|$)/g);
-      // HH:MM:SSの最後のマッチ（秒）
-      const timeMatch = datetime.match(/(\d{2}):(\d{2}):(\d{2})/);
-      const sec = timeMatch ? timeMatch[3] : null;
-
-      // 1レスごとにIQ+1
-      nyoIQ += 1;
-
-      if (sec !== null) {
-        if (sec === '00') {
-          nyoIQ += 10;
-          cnt00++;
-        } else if (zoroSecs.has(sec)) {
-          nyoIQ -= 10;
-          cntZoro++;
-        }
-
-        if (sec === '17') {
-          amaIQ -= 10;
-          cnt17++;
-        }
-      }
-
-      nyoHistory.push(nyoIQ);
-      amaHistory.push(amaIQ);
-      labels.push(`${resNum}`);
-    }
-
-    // 表示
-    document.getElementById('nyo-iq').textContent = nyoIQ;
-    document.getElementById('ama-iq').textContent = amaIQ;
-    document.getElementById('nyo-rescount').textContent = `${lines.length} レス`;
-    document.getElementById('ama-rescount').textContent = `${cnt17} 回ヒット`;
-
-    document.getElementById('cnt-00').textContent = cnt00;
-    document.getElementById('cnt-zoro').textContent = cntZoro;
-    document.getElementById('cnt-17').textContent = cnt17;
-
-    ['result-card', 'events-card', 'chart-card'].forEach(id => {
-      document.getElementById(id).classList.remove('hidden');
+  fetch('/api/fetch?url=' + encodeURIComponent(rawUrl))
+    .then(function(res) {
+      if (!res.ok) return res.text().then(function(t) { throw new Error('取得失敗 HTTP ' + res.status + ': ' + t); });
+      return res.text();
+    })
+    .then(function(text) {
+      var posts = parseRaw(text);
+      if (posts.length === 0) throw new Error('書き込みが見つかりませんでした。URLを確認してください。');
+      var titleEl = document.getElementById('thread-title');
+      var rawTitle = posts[0].title || '';
+      var titleText = rawTitle ? decodeHtmlEntities(rawTitle) : '';
+      if (titleText) { titleEl.textContent = '📌 ' + titleText; titleEl.style.display = 'block'; }
+      else { titleEl.style.display = 'none'; }
+      renderResult(posts);
+    })
+    .catch(function(err) { showError(err.message); })
+    .finally(function() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('calc-btn').disabled = false;
     });
+}
 
-    drawChart(labels, nyoHistory, amaHistory);
-  }
+function renderResult(posts) {
+  var pool = 0, score = 100, maxPool = 0, collectCount = 0;
+  var visit17 = 0, count14 = 0, count20 = 0, count27 = 0, count52 = 0, count57 = 0;
+  var events = [];
+  var chartData = [];
 
-  function drawChart(labels, nyoData, amaData) {
-    const canvas = document.getElementById('iq-chart');
-    const wrapper = document.getElementById('chart-wrapper');
-    canvas.width = wrapper.clientWidth;
-    canvas.height = 260;
-    const ctx = canvas.getContext('2d');
-
-    if (chartInstance) {
-      chartInstance.destroy();
-    }
-
-    // 間引き：レス数が多い場合はラベルを間引く
-    const maxPoints = 200;
-    let nyoSampled = nyoData;
-    let amaSampled = amaData;
-    let labelsSampled = labels;
-
-    if (nyoData.length > maxPoints) {
-      const step = Math.ceil(nyoData.length / maxPoints);
-      nyoSampled = nyoData.filter((_, i) => i % step === 0 || i === nyoData.length - 1);
-      amaSampled = amaData.filter((_, i) => i % step === 0 || i === amaData.length - 1);
-      labelsSampled = labels.filter((_, i) => i % step === 0 || i === labels.length - 1);
-    }
-
-    // Chart.jsをCDNから読み込む（既に読み込まれていない場合）
-    if (!window.Chart) {
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
-      script.onload = () => renderChart(ctx, labelsSampled, nyoSampled, amaSampled);
-      document.head.appendChild(script);
-    } else {
-      renderChart(ctx, labelsSampled, nyoSampled, amaSampled);
-    }
-
-    // インスタンス保存はrenderChart内で行う
-  }
-
-  function renderChart(ctx, labels, nyoData, amaData) {
-    if (chartInstance) chartInstance.destroy();
-
-    chartInstance = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [
-          {
-            label: 'ʃt(c◜･ ᴗ ･) IQ',
-            data: nyoData,
-            borderColor: '#7c6af7',
-            backgroundColor: 'rgba(124,106,247,0.08)',
-            borderWidth: 2,
-            pointRadius: nyoData.length > 100 ? 0 : 3,
-            tension: 0.3,
-            fill: true,
-          },
-          {
-            label: 'ᶘｲ^⇁^ﾅ川 IQ',
-            data: amaData,
-            borderColor: '#f76a8a',
-            backgroundColor: 'rgba(247,106,138,0.08)',
-            borderWidth: 2,
-            pointRadius: amaData.length > 100 ? 0 : 3,
-            tension: 0.3,
-            fill: true,
-          }
-        ]
-      },
-      options: {
-        responsive: false,
-        animation: false,
-        plugins: {
-          legend: {
-            labels: {
-              color: '#888899',
-              font: { size: 12 }
-            }
-          },
-          tooltip: {
-            backgroundColor: '#1a1a24',
-            borderColor: '#2e2e40',
-            borderWidth: 1,
-            titleColor: '#e8e8f0',
-            bodyColor: '#888899',
-          }
-        },
-        scales: {
-          x: {
-            ticks: {
-              color: '#555566',
-              maxTicksLimit: 10,
-              font: { size: 11 }
-            },
-            grid: { color: '#1e1e2a' }
-          },
-          y: {
-            ticks: {
-              color: '#555566',
-              font: { size: 11 }
-            },
-            grid: { color: '#1e1e2a' }
-          }
+  for (var i = 0; i < posts.length; i++) {
+    var post = posts[i];
+    pool += 1;
+    var rule = RULES[post.sec];
+    if (rule) {
+      if (rule.type === 'collect') {
+        if (pool > 0) {
+          score += pool; collectCount++;
+          events.push({ num: post.num, date: post.date, label: rule.label, delta: pool, type: 'collect' });
+          pool = 0;
+        } else {
+          events.push({ num: post.num, date: post.date, label: rule.label, delta: 0, type: 'collect-empty' });
         }
+      } else if (rule.type === 'score') {
+        if (post.sec === '17') visit17++;
+        if (post.sec === '14') count14++;
+        if (post.sec === '20') count20++;
+        if (post.sec === '27') count27++;
+        if (post.sec === '52') count52++;
+        if (post.sec === '57') count57++;
+        score += rule.delta;
+        if (score < 0) score = 0;
+        var evType = rule.delta > 0 ? 'plus' : rule.delta < 0 ? 'minus' : 'zero';
+        events.push({ num: post.num, date: post.date, label: rule.label, delta: rule.delta, type: evType });
       }
-    });
+    }
+    if (pool > maxPool) maxPool = pool;
+    chartData.push({ idx: i, pool: pool, score: score });
   }
 
-  function setStatus(msg) {
-    document.getElementById('status').textContent = msg;
+  document.getElementById('total-score').textContent = score.toLocaleString();
+  document.getElementById('stat-posts').textContent = posts.length.toLocaleString() + ' 件';
+  document.getElementById('stat-pool').textContent = pool.toLocaleString() + ' 匹';
+  document.getElementById('stat-00').textContent = collectCount + ' 回';
+  document.getElementById('stat-maxpool').textContent = maxPool.toLocaleString() + ' 匹';
+  document.getElementById('stat-17').textContent = visit17 + ' 回';
+  document.getElementById('stat-14').textContent = count14 + ' 匹';
+  document.getElementById('stat-20').textContent = count20 + ' 回';
+  document.getElementById('stat-27').textContent = count27 + ' 匹';
+  document.getElementById('stat-52').textContent = count52 + ' 匹';
+  document.getElementById('stat-57').textContent = count57 + ' 回';
+
+  var logRows = document.getElementById('log-rows');
+  logRows.innerHTML = '';
+  if (events.length === 0) {
+    logRows.innerHTML = '<div class="log-row"><span class="log-event" style="color:var(--muted);grid-column:1/-1">特殊秒の書き込みはありませんでした</span></div>';
+  } else {
+    for (var j = 0; j < events.length; j++) {
+      var ev = events[j];
+      var dc, ds;
+      if (ev.type === 'collect')        { dc = 'delta-get';   ds = '+' + ev.delta + '匹 保護！'; }
+      else if (ev.type === 'collect-empty') { dc = 'delta-zero'; ds = '(空)'; }
+      else if (ev.type === 'plus')      { dc = 'delta-plus';  ds = '+' + ev.delta; }
+      else if (ev.type === 'minus')     { dc = 'delta-minus'; ds = '' + ev.delta; }
+      else                              { dc = 'delta-zero';  ds = '±0'; }
+      var row = document.createElement('div');
+      row.className = 'log-row';
+      row.innerHTML = '<span class="log-res">&gt;&gt;' + ev.num + '</span>'
+        + '<span class="log-event">' + ev.label + '<br><span style="font-size:.68rem;color:var(--muted)">' + ev.date + '</span></span>'
+        + '<span class="log-delta ' + dc + '">' + ds + '</span>';
+      logRows.appendChild(row);
+    }
   }
 
-  // Enterキーで集計
-  document.getElementById('url-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') fetchThread();
-  });
+  document.getElementById('result').style.display = 'block';
+  drawChart(chartData);
+  document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function drawChart(data) {
+  var canvas = document.getElementById('chart');
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var W = canvas.parentElement.clientWidth - 32;
+  var H = 200;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.scale(dpr, dpr);
+  if (data.length < 2) return;
+
+  var poolVals  = data.map(function(d) { return d.pool; });
+  var scoreVals = data.map(function(d) { return d.score; });
+  var allVals = poolVals.concat(scoreVals);
+  var maxVal = Math.max.apply(null, allVals.concat([1]));
+  var minVal = Math.min.apply(null, allVals.concat([0]));
+  var range = maxVal - minVal || 1;
+  var pad = { top: 16, right: 16, bottom: 28, left: 44 };
+  var gW = W - pad.left - pad.right;
+  var gH = H - pad.top - pad.bottom;
+
+  ctx.fillStyle = '#0f3460';
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 1;
+  for (var i = 0; i <= 4; i++) {
+    var y = pad.top + (gH / 4) * i;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + gW, y); ctx.stroke();
+    var val = Math.round(maxVal - (range / 4) * i);
+    ctx.fillStyle = '#7b82a8'; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(val, pad.left - 4, y + 4);
+  }
+
+  function toX(i) { return pad.left + (i / (data.length - 1)) * gW; }
+  function toY(v) { return pad.top + gH - ((v - minVal) / range) * gH; }
+  function drawLine(vals, color) {
+    ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.lineJoin = 'round';
+    for (var k = 0; k < vals.length; k++) {
+      if (k === 0) ctx.moveTo(toX(k), toY(vals[k]));
+      else ctx.lineTo(toX(k), toY(vals[k]));
+    }
+    ctx.stroke();
+  }
+
+  drawLine(poolVals,  '#c9d6ff');
+  drawLine(scoreVals, '#5ef0c8');
+
+  ctx.fillStyle = '#7b82a8'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+  var idxs = [0, Math.floor(data.length / 2), data.length - 1];
+  for (var li = 0; li < idxs.length; li++) {
+    ctx.fillText('>>' + (idxs[li] + 1), toX(idxs[li]), H - 8);
+  }
+  ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
+  ctx.fillStyle = '#c9d6ff'; ctx.fillRect(pad.left, 4, 12, 8);
+  ctx.fillStyle = '#eef0ff'; ctx.fillText('プール', pad.left + 16, 12);
+  ctx.fillStyle = '#5ef0c8'; ctx.fillRect(pad.left + 72, 4, 12, 8);
+  ctx.fillStyle = '#eef0ff'; ctx.fillText('保護', pad.left + 88, 12);
+}
 </script>
 </body>
 </html>

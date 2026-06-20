@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IQスレ集計</title>
+  <style>
+    :root {
+      --bg: #0e0e14;
+      --surface: #1a1a24;
+      --surface2: #22222f;
+      --border: #2e2e40;
+      --accent: #7c6af7;
+      --accent2: #f76a8a;
+      --text: #e8e8f0;
+      --text-dim: #888899;
+      --green: #5af7a0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text);
+    }
+
+    header p {
+      margin-top: 6px;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      min-width: 200px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+    }
+
+    input[type="text"]::placeholder {
+      color: var(--text-dim);
+    }
+
+    button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+
+    button:hover { opacity: 0.85; }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    #thread-title {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-top: 10px;
+      min-height: 1.2em;
+    }
+
+    #status {
+      font-size: 0.85rem;
+      color: var(--accent);
+      margin-top: 8px;
+      min-height: 1.2em;
+    }
+
+    .iq-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 500px) {
+      .iq-grid { grid-template-columns: 1fr; }
+    }
+
+    .iq-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .iq-box .label {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+
+    .iq-box .name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .iq-box .value {
+      font-size: 2.4rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .iq-box.nyo .name { color: var(--accent); }
+    .iq-box.nyo .value { color: var(--accent); }
+    .iq-box.ama .name { color: var(--accent2); }
+    .iq-box.ama .value { color: var(--accent2); }
+
+    .iq-box .res-count {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      margin-top: 6px;
+    }
+
+    .section-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    @media (max-width: 450px) {
+      .events-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    .event-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .event-box .ev-label {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .event-box .ev-value {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    .event-box .ev-desc {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .ev-00 .ev-value { color: var(--green); }
+    .ev-zoro .ev-value { color: var(--accent2); }
+    .ev-17 .ev-value { color: #f7c46a; }
+
+    canvas {
+      display: block;
+      width: 100%;
+    }
+
+    #chart-wrapper {
+      position: relative;
+      width: 100%;
+      height: 260px;
+    }
+
+    .hidden { display: none; }
+
+    .rules {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+    }
+
+    .rules span {
+      display: inline-block;
+      background: var(--surface2);
+      border-radius: 4px;
+      padding: 1px 6px;
+      margin-right: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>ʃt(c◜･ ᴗ ･) IQスレ集計</h1>
+  <p>シタラバBBSのIQスレを集計します</p>
+</header>
+
+<!-- 入力 -->
+<div class="card">
+  <div class="input-row">
+    <input type="text" id="url-input"
+      placeholder="https://jbbs.shitaraba.net/bbs/read.cgi/anime/11224/..."
+      value="https://jbbs.shitaraba.net/bbs/read.cgi/anime/11224/1772338229/">
+    <button id="fetch-btn" onclick="fetchThread()">集計</button>
+  </div>
+  <div id="thread-title"></div>
+  <div id="status"></div>
+</div>
+
+<!-- IQ表示 -->
+<div class="card hidden" id="result-card">
+  <div class="section-title">現在のIQ</div>
+  <div class="iq-grid">
+    <div class="iq-box nyo">
+      <div class="label">現在のIQ</div>
+      <div class="name">ʃt(c◜･ ᴗ ･)</div>
+      <div class="value" id="nyo-iq">100</div>
+      <div class="res-count" id="nyo-rescount"></div>
+    </div>
+    <div class="iq-box ama">
+      <div class="label">現在のIQ</div>
+      <div class="name">ᶘｲ^⇁^ﾅ川</div>
+      <div class="value" id="ama-iq">100</div>
+      <div class="res-count" id="ama-rescount"></div>
+    </div>
+  </div>
+</div>
+
+<!-- イベントカウント -->
+<div class="card hidden" id="events-card">
+  <div class="section-title">イベント発生回数</div>
+  <div class="events-grid">
+    <div class="event-box ev-00">
+      <div class="ev-label">秒数 :00</div>
+      <div class="ev-value" id="cnt-00">0</div>
+      <div class="ev-desc">IQ +10 (ʃt)</div>
+    </div>
+    <div class="event-box ev-zoro">
+      <div class="ev-label">その他ゾロ目</div>
+      <div class="ev-value" id="cnt-zoro">0</div>
+      <div class="ev-desc">IQ −10 (ʃt)</div>
+    </div>
+    <div class="event-box ev-17">
+      <div class="ev-label">秒数 :17</div>
+      <div class="ev-value" id="cnt-17">0</div>
+      <div class="ev-desc">IQ −10 (ᶘｲ^⇁^ﾅ川)</div>
+    </div>
+  </div>
+</div>
+
+<!-- グラフ -->
+<div class="card hidden" id="chart-card">
+  <div class="section-title">IQ推移グラフ</div>
+  <div id="chart-wrapper">
+    <canvas id="iq-chart"></canvas>
+  </div>
+</div>
+
+<!-- ルール -->
+<div class="card">
+  <div class="section-title">ルール</div>
+  <div class="rules">
+    <span style="color:var(--accent)">ʃt(c◜･ ᴗ ･)</span>はIQ100からスタート<br>
+    1レスごとにIQ <span>+1</span><br>
+    秒数 <span>:00</span> でIQ <span>+10</span><br>
+    その他のゾロ目でIQ <span>−10</span>（:11 :22 :33 :44 :55）<br>
+    秒数 <span>:17</span> で <span style="color:var(--accent2)">ᶘｲ^⇁^ﾅ川</span> のIQ <span>−10</span>（100スタート）
+  </div>
+</div>
+
+<script>
+  let chartInstance = null;
+
+  async function fetchThread() {
+    const url = document.getElementById('url-input').value.trim();
+    if (!url) return;
+
+    const btn = document.getElementById('fetch-btn');
+    btn.disabled = true;
+    setStatus('取得中...');
+
+    try {
+      const res = await fetch(`/api/fetch-thread?url=${encodeURIComponent(url)}`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      // スレタイ表示
+      if (data.threadTitle) {
+        document.getElementById('thread-title').textContent = '📌 ' + data.threadTitle;
+      }
+
+      processThread(data.text);
+      setStatus('');
+    } catch (e) {
+      setStatus('エラー: ' + e.message);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function processThread(text) {
+    const lines = text.split('\n').filter(l => l.trim());
+
+    // ʃtのIQ推移・ᶘｲのIQ推移
+    let nyoIQ = 100;
+    let amaIQ = 100;
+    const nyoHistory = [100];
+    const amaHistory = [100];
+    const labels = ['開始'];
+
+    let cnt00 = 0;
+    let cntZoro = 0;
+    let cnt17 = 0;
+
+    // ゾロ目の秒数（00除く）
+    const zoroSecs = new Set(['11','22','33','44','55']);
+
+    for (const line of lines) {
+      const parts = line.split('<>');
+      if (parts.length < 5) continue;
+
+      const resNum = parts[0];
+      const datetime = parts[2]; // 例: 2025/01/23 12:34:56 ID:xxxx
+
+      // 秒数を抽出
+      const secMatch = datetime.match(/:(\d{2})(?:\s|$)/g);
+      // HH:MM:SSの最後のマッチ（秒）
+      const timeMatch = datetime.match(/(\d{2}):(\d{2}):(\d{2})/);
+      const sec = timeMatch ? timeMatch[3] : null;
+
+      // 1レスごとにIQ+1
+      nyoIQ += 1;
+
+      if (sec !== null) {
+        if (sec === '00') {
+          nyoIQ += 10;
+          cnt00++;
+        } else if (zoroSecs.has(sec)) {
+          nyoIQ -= 10;
+          cntZoro++;
+        }
+
+        if (sec === '17') {
+          amaIQ -= 10;
+          cnt17++;
+        }
+      }
+
+      nyoHistory.push(nyoIQ);
+      amaHistory.push(amaIQ);
+      labels.push(`${resNum}`);
+    }
+
+    // 表示
+    document.getElementById('nyo-iq').textContent = nyoIQ;
+    document.getElementById('ama-iq').textContent = amaIQ;
+    document.getElementById('nyo-rescount').textContent = `${lines.length} レス`;
+    document.getElementById('ama-rescount').textContent = `${cnt17} 回ヒット`;
+
+    document.getElementById('cnt-00').textContent = cnt00;
+    document.getElementById('cnt-zoro').textContent = cntZoro;
+    document.getElementById('cnt-17').textContent = cnt17;
+
+    ['result-card', 'events-card', 'chart-card'].forEach(id => {
+      document.getElementById(id).classList.remove('hidden');
+    });
+
+    drawChart(labels, nyoHistory, amaHistory);
+  }
+
+  function drawChart(labels, nyoData, amaData) {
+    const canvas = document.getElementById('iq-chart');
+    const wrapper = document.getElementById('chart-wrapper');
+    canvas.width = wrapper.clientWidth;
+    canvas.height = 260;
+    const ctx = canvas.getContext('2d');
+
+    if (chartInstance) {
+      chartInstance.destroy();
+    }
+
+    // 間引き：レス数が多い場合はラベルを間引く
+    const maxPoints = 200;
+    let nyoSampled = nyoData;
+    let amaSampled = amaData;
+    let labelsSampled = labels;
+
+    if (nyoData.length > maxPoints) {
+      const step = Math.ceil(nyoData.length / maxPoints);
+      nyoSampled = nyoData.filter((_, i) => i % step === 0 || i === nyoData.length - 1);
+      amaSampled = amaData.filter((_, i) => i % step === 0 || i === amaData.length - 1);
+      labelsSampled = labels.filter((_, i) => i % step === 0 || i === labels.length - 1);
+    }
+
+    // Chart.jsをCDNから読み込む（既に読み込まれていない場合）
+    if (!window.Chart) {
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+      script.onload = () => renderChart(ctx, labelsSampled, nyoSampled, amaSampled);
+      document.head.appendChild(script);
+    } else {
+      renderChart(ctx, labelsSampled, nyoSampled, amaSampled);
+    }
+
+    // インスタンス保存はrenderChart内で行う
+  }
+
+  function renderChart(ctx, labels, nyoData, amaData) {
+    if (chartInstance) chartInstance.destroy();
+
+    chartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'ʃt(c◜･ ᴗ ･) IQ',
+            data: nyoData,
+            borderColor: '#7c6af7',
+            backgroundColor: 'rgba(124,106,247,0.08)',
+            borderWidth: 2,
+            pointRadius: nyoData.length > 100 ? 0 : 3,
+            tension: 0.3,
+            fill: true,
+          },
+          {
+            label: 'ᶘｲ^⇁^ﾅ川 IQ',
+            data: amaData,
+            borderColor: '#f76a8a',
+            backgroundColor: 'rgba(247,106,138,0.08)',
+            borderWidth: 2,
+            pointRadius: amaData.length > 100 ? 0 : 3,
+            tension: 0.3,
+            fill: true,
+          }
+        ]
+      },
+      options: {
+        responsive: false,
+        animation: false,
+        plugins: {
+          legend: {
+            labels: {
+              color: '#888899',
+              font: { size: 12 }
+            }
+          },
+          tooltip: {
+            backgroundColor: '#1a1a24',
+            borderColor: '#2e2e40',
+            borderWidth: 1,
+            titleColor: '#e8e8f0',
+            bodyColor: '#888899',
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: '#555566',
+              maxTicksLimit: 10,
+              font: { size: 11 }
+            },
+            grid: { color: '#1e1e2a' }
+          },
+          y: {
+            ticks: {
+              color: '#555566',
+              font: { size: 11 }
+            },
+            grid: { color: '#1e1e2a' }
+          }
+        }
+      }
+    });
+  }
+
+  function setStatus(msg) {
+    document.getElementById('status').textContent = msg;
+  }
+
+  // Enterキーで集計
+  document.getElementById('url-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') fetchThread();
+  });
+</script>
+</body>
+</html>

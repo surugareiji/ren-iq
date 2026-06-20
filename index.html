@@ -330,8 +330,6 @@
     try {
       const res = await fetch(`/api/fetch-thread?url=${encodeURIComponent(url)}`);
       const data = await res.json();
-      const text = await res.text();
-      alert(text);
       alert(JSON.stringify(data));
       if (data.error) throw new Error(data.error);
 
